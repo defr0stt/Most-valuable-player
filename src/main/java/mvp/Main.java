@@ -15,6 +15,9 @@ public class Main {
                 "src/main/resources/csv_files/basketball/game1_b.csv",
                 "src/main/resources/csv_files/basketball/game2_b.csv",
                 "src/main/resources/csv_files/basketball/game3_b.csv",
+                "src/main/resources/csv_files/basketball/game4_b.csv",
+                "src/main/resources/csv_files/basketball/game5_b.csv",
+                "src/main/resources/csv_files/basketball/game6_b.csv",
         };
         String[] handballFiles = {
                 "src/main/resources/csv_files/handball/game1_h.csv",
@@ -24,8 +27,10 @@ public class Main {
 
         // main actions
         SportFacade sportFacade = SportFacade.getInstance();
-        sportInformation(sportFacade, basketballFiles);
-        sportFacade.setPointsCounter(new PointsCounter());
+        sportInformation(sportFacade, basketballFiles);     //
+        sportInformation(sportFacade, handballFiles);       // sum of points by 2 tournaments
+
+        sportFacade.setPointsCounter(new PointsCounter());      // new tournament
         sportInformation(sportFacade, handballFiles);
     }
 
