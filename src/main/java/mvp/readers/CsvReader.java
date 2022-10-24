@@ -6,9 +6,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import mvp.players.Player;
-import mvp.players.factory.BasketballPlayerFactory;
-import mvp.players.factory.HandballPlayerFactory;
-import mvp.players.factory.PlayerFactory;
+import mvp.players.factory.FactoryVariation;
 import mvp.sports.Sports;
 
 import java.io.FileNotFoundException;
@@ -29,35 +27,7 @@ public class CsvReader {
             CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
             CSVReader csvReader = new CSVReaderBuilder(filereader).withCSVParser(parser).build();
             // players from csv and player factory
-            PlayerFactory playerFactory = null;
-            String[] nextRecord;
-            // csv data reading
-            while ((nextRecord = csvReader.readNext()) != null) {
-                // set factory
-                if(nextRecord.length == 1){
-                    Sports sport = null;
-                    try {
-                        sport = Sports.valueOf(nextRecord[0]);
-                    } catch (IllegalArgumentException e){
-                        System.out.println("\t" + nextRecord[0] + " is not found in sport list\n\tMVP won’t be calculated");
-                        System.exit(0);
-                    }
-                    if(sport == Sports.BASKETBALL)
-                        playerFactory = new BasketballPlayerFactory();
-                    else if(sport == Sports.HANDBALL)
-                        playerFactory = new HandballPlayerFactory();
-                } else {
-                    if(playerFactory instanceof BasketballPlayerFactory)
-                        playerList.add(playerFactory
-                                        .createPlayer(nextRecord[0], nextRecord[1], Integer.parseInt(nextRecord[2]),
-                                                nextRecord[3],Integer.parseInt(nextRecord[4]),Integer.parseInt(nextRecord[5]),
-                                                Integer.parseInt(nextRecord[6])));
-                    else if(playerFactory instanceof HandballPlayerFactory)
-                        playerList.add(playerFactory
-                                .createPlayer(nextRecord[0], nextRecord[1], Integer.parseInt(nextRecord[2]),
-                                        nextRecord[3],Integer.parseInt(nextRecord[4]),Integer.parseInt(nextRecord[5])));
-                }
-            }
+            playerList = getMatchPlayers(csvReader);
         } catch (FileNotFoundException e) {
             System.out.println("\tFile with path : " + filePath + " is not found\n\tMVP won’t be calculated");
             System.exit(0);
@@ -66,5 +36,29 @@ public class CsvReader {
             System.exit(0);
         }
         return playerList;
+    }
+
+    private static List<Player> getMatchPlayers(CSVReader csvReader) throws IOException {
+        List<Player> playerList = new ArrayList<>();
+        Sports sport = null;
+        String[] nextRecord;
+        // csv data reading
+        while ((nextRecord = csvReader.readNext()) != null) {
+            // set factory
+            if(nextRecord.length == 1){
+                try {
+                    sport = Sports.valueOf(nextRecord[0]);
+                } catch (IllegalArgumentException e){
+                    System.out.println("\t" + nextRecord[0] + " is not found in sport list\n\tMVP won’t be calculated");
+                    System.exit(0);
+                }
+            } else
+                addingPlayers(playerList,sport,nextRecord);
+        }
+        return playerList;
+    }
+
+    private static void addingPlayers(List<Player> playerList, Sports sports, String[] nextRecord) {
+        playerList.add(FactoryVariation.playerVariation(sports,nextRecord));
     }
 }
