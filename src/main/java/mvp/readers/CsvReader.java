@@ -53,12 +53,8 @@ public class CsvReader {
                     System.exit(0);
                 }
             } else
-                addingPlayers(playerList,sport,nextRecord);
+                playerList.add(FactoryVariation.playerVariation(sport,nextRecord));
         }
         return playerList;
-    }
-
-    private static void addingPlayers(List<Player> playerList, Sports sports, String[] nextRecord) {
-        playerList.add(FactoryVariation.playerVariation(sports,nextRecord));
     }
 }
